@@ -1,0 +1,86 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../google-apis/google-maps-api.html">
+
+<!--
+`geo-codec`
+An element to perform geocoding and reverse geocoding using the Google maps API.
+
+@demo demo/index.html 
+-->
+
+<dom-module id="geo-codec">
+  <template>
+    <style>
+      :host {
+        /*display: block;*/
+      }
+    </style>
+    <google-maps-api api-key="[[apiKey]]" version="3.exp"></google-maps-api>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'geo-codec',
+
+      properties: {
+        /**
+         * Your Google maps API key. See https://developers.google.com/maps/documentation/javascript/get-api-key
+         */
+        apiKey: String
+      },
+
+      /**
+       * Convert an address into coordinates.
+       *
+       * `address`: The string to geocode.
+       *
+       * `onComplete`: A callback function with arguments (*formatted address*, *lat*, *lng*, *place_id*).
+       *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
+       */
+      geocode: function(address, onComplete) {
+        this.geocoder = this.geocoder || new google.maps.Geocoder();
+        this.geocoder.geocode({address: address}, function(results, status) {
+//                    console.log(address, status, results);
+          if (status == google.maps.GeocoderStatus.OK && results[0]) {
+            onComplete(
+                    results[0].formatted_address,           // address
+                    results[0].geometry.location.lat(),     // lat
+                    results[0].geometry.location.lng(),     // lng
+                    results[0].place_id);                   // place id
+          } else {
+            console.warn('Geocode failed for ' + address + '. Status ' + status, results);
+            onComplete();
+          }
+        });
+      },
+
+      /**
+       * Convert coordinates into an address.
+       *
+       * `lat`: Latitude
+       *
+       * `lng`: Longitude
+       *
+       * `onComplete`: A callback function with arguments (*formatted address*, *address components*, *place_id*).
+       *              *address components* is an array. For a US address it will be [city, county, state, country].
+       *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
+       */
+      reverseGeocode: function(lat, lng, onComplete) {
+        this.geocoder = this.geocoder || new google.maps.Geocoder();
+        this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
+//                    console.log(lat, lng, status, results);
+          if (status == google.maps.GeocoderStatus.OK && results[1]) {
+            onComplete(
+                    results[1].formatted_address,           // address
+                    results[1].address_components,          // components (city, county, state, country) for US.
+                    results[1].place_id);                   // place id
+          } else {
+            console.warn('Geocode failed for [' + lat + ',' + lng + ']. Status ' + status, results);
+            onComplete();
+          }
+        });
+      },
+    });
+  </script>
+</dom-module>

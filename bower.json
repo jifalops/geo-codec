@@ -1,0 +1,15 @@
+{
+  "name": "geo-codec",
+  "description": "An element to perform geocoding and reverse geocoding using the Google maps API.",
+  "main": "geo-codec.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "google-apis": "^1.1.7"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
