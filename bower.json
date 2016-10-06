@@ -2,6 +2,16 @@
   "name": "geo-codec",
   "description": "An element to perform geocoding and reverse geocoding using the Google maps API.",
   "main": "geo-codec.html",
+  "keywords": [
+    "web-components",
+    "geocode",
+    "google",
+    "maps",
+    "geocoding",
+    "codec",
+    "geo",
+    "location"
+  ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "google-apis": "^1.1.7"
