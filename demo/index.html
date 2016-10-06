@@ -21,19 +21,34 @@
       <demo-snippet>
         <template>
           <geo-codec id="geo" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
-          <div id="geocode"></div>
-          <div id="reverse"></div>
+          <div>Toledo, OH geocoded:</div>
+          <div style="margin: 8px;" id="geocode"></div>
+          <div>[41.6639383, -83.55521199999998] reverse geocoded:</div>
+          <div style="margin: 8px;" id="reverse"></div>
+          <div>Toledo, OH's placeId reverse geocoded:</div>
+          <div style="margin: 8px;" id="place"></div>
           <script>
-            var geo = document.getElementById('geo');
-            geo.geocode('Toledo, OH', function(address, lat, lng, place) {
-              document.getElementById('geocode').innerHTML = 'Toledo, OH geocoded: (' +
-                      address + ', ' + lat + ', ' + lng + ', ' + place + ')';
-            });
-            // Taj Mahal coordinates
-            geo.reverseGeocode(27.173891, 78.042068, function(address, components, place) {
-              document.getElementById('reverse').innerHTML = '[27.173891, 78.042068] reverse geocoded: (' +
-                      address + ', ' + components + ', ' + place + ')';
-              console.log('address components', components);
+            document.addEventListener('maps-api-loaded', function() {
+              var geo = document.getElementById('geo');
+
+              geo.geocode('Toledo, OH', function (address, lat, lng, place) {
+                document.getElementById('geocode').innerHTML = 'address: ' + address +
+                        '<br>lat: ' + lat + '<br>lng: ' + lng + '<br>place_id: ' + place;
+              });
+
+              // Toledo, OH coordinates
+              geo.reverseGeocode(41.6639383, -83.55521199999998, function (address, components, place) {
+                document.getElementById('reverse').innerHTML = 'address: ' + address +
+                        '<br>components ' + components + '<br>place_id: ' + place;
+                console.log('reverseGeocode() address components', components);
+              });
+
+              // Toledo, OH place id
+              geo.reverseGeocodePlace('ChIJeU4e_C2HO4gRRcM6RZ_IPHw', function (address, components, lat, lng) {
+                document.getElementById('place').innerHTML = 'address: ' + address +
+                        '<br>components ' + components + '<br>lat: ' + lat + '<br>lng: ' + lng;
+                console.log('placeId address components', components);
+              });
             });
           </script>
         </template>

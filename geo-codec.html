@@ -15,7 +15,10 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
         /*display: block;*/
       }
     </style>
-    <google-maps-api api-key="[[apiKey]]" version="3.exp"></google-maps-api>
+    <google-maps-api id="api"
+                     api-key="[[apiKey]]"
+                     notify-event="maps-api-loaded"
+                     version="3.exp"></google-maps-api>
   </template>
 
   <script>
@@ -27,8 +30,21 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
         /**
          * Your Google maps API key. See https://developers.google.com/maps/documentation/javascript/get-api-key
          */
-        apiKey: String
+        apiKey: String,
+//        apiLoaded: {
+//          type: Boolean,
+//          value: false,
+//          readOnly: true,
+//          notify: true
+//        }
       },
+
+//      ready: function() {
+//        this.$.api.addEventListener('api-load', function(e) {
+////          this._setApiLoaded(true);
+//          this.fire('api-loaded');
+//        });
+//      },
 
       /**
        * Convert an address into coordinates.
@@ -63,7 +79,6 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
        * `lng`: Longitude
        *
        * `onComplete`: A callback function with arguments (*formatted address*, *address components*, *place_id*).
-       *              *address components* is an array. For a US address it will be [city, county, state, country].
        *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
        */
       reverseGeocode: function(lat, lng, onComplete) {
@@ -73,10 +88,35 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
           if (status == google.maps.GeocoderStatus.OK && results[1]) {
             onComplete(
                     results[1].formatted_address,           // address
-                    results[1].address_components,          // components (city, county, state, country) for US.
+                    results[1].address_components,          // components
                     results[1].place_id);                   // place id
           } else {
             console.warn('Geocode failed for [' + lat + ',' + lng + ']. Status ' + status, results);
+            onComplete();
+          }
+        });
+      },
+
+      /**
+       * Convert an address into coordinates.
+       *
+       * `placeId`: The place_id to reverse geocode.
+       *
+       * `onComplete`: A callback function with arguments (*formatted address*, *address components*, *lat*, *lng*).
+       *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
+       */
+      reverseGeocodePlace: function(placeId, onComplete) {
+        this.geocoder = this.geocoder || new google.maps.Geocoder();
+        this.geocoder.geocode({'placeId': placeId}, function(results, status) {
+//                    console.log(placeId, status, results);
+          if (status == google.maps.GeocoderStatus.OK && results[0]) {
+            onComplete(
+                    results[0].formatted_address,           // address
+                    results[0].address_components,          // components
+                    results[0].geometry.location.lat(),     // lat
+                    results[0].geometry.location.lng());    // lng
+          } else {
+            console.warn('Geocode failed for ' + address + '. Status ' + status, results);
             onComplete();
           }
         });
