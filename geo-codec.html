@@ -78,18 +78,22 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
        *
        * `lng`: Longitude
        *
+       * `precise`: If true, attempts to get the street address as part of the location.
+       *            If false, will only get the general area (e.g. city).
+       *
        * `onComplete`: A callback function with arguments (*formatted address*, *address components*, *place_id*).
        *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
        */
-      reverseGeocode: function(lat, lng, onComplete) {
+      reverseGeocode: function(lat, lng, precise, onComplete) {
         this.geocoder = this.geocoder || new google.maps.Geocoder();
         this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
 //                    console.log(lat, lng, status, results);
-          if (status == google.maps.GeocoderStatus.OK && results[1]) {
+          if (status == google.maps.GeocoderStatus.OK && (precise || results[1])) {
+            var index = precise ? 0 : 1;
             onComplete(
-                    results[1].formatted_address,           // address
-                    results[1].address_components,          // components
-                    results[1].place_id);                   // place id
+                    results[index].formatted_address,           // address
+                    results[index].address_components,          // components
+                    results[index].place_id);                   // place
           } else {
             console.warn('Geocode failed for [' + lat + ',' + lng + ']. Status ' + status, results);
             onComplete();
