@@ -37,7 +37,7 @@
               });
 
               // Toledo, OH coordinates
-              geo.reverseGeocode(41.6639383, -83.55521199999998, function (address, components, place) {
+              geo.reverseGeocode(41.6639383, -83.55521199999998, true, function (address, components, place) {
                 document.getElementById('reverse').innerHTML = 'address: ' + address +
                         '<br>components ' + components + '<br>place_id: ' + place;
                 console.log('reverseGeocode() address components', components);

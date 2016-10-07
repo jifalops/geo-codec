@@ -87,7 +87,7 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
       reverseGeocode: function(lat, lng, precise, onComplete) {
         this.geocoder = this.geocoder || new google.maps.Geocoder();
         this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
-//                    console.log(lat, lng, status, results);
+//                    console.log(lat, lng, precise, status, results);
           if (status == google.maps.GeocoderStatus.OK && (precise || results[1])) {
             var index = precise ? 0 : 1;
             onComplete(
@@ -102,7 +102,7 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
       },
 
       /**
-       * Convert an address into coordinates.
+       * Convert a place_id into an address and coordinates.
        *
        * `placeId`: The place_id to reverse geocode.
        *
