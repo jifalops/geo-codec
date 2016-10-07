@@ -120,7 +120,7 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
                     results[0].geometry.location.lat(),     // lat
                     results[0].geometry.location.lng());    // lng
           } else {
-            console.warn('Geocode failed for ' + address + '. Status ' + status, results);
+            console.warn('Geocode failed for ' + placeId + '. Status ' + status, results);
             onComplete();
           }
         });
