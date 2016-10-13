@@ -12,12 +12,11 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
   <template>
     <style>
       :host {
-        /*display: block;*/
+        display: none;
       }
     </style>
     <google-maps-api id="api"
                      api-key="[[apiKey]]"
-                     notify-event="maps-api-loaded"
                      version="3.exp"></google-maps-api>
   </template>
 
@@ -31,20 +30,36 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
          * Your Google maps API key. See https://developers.google.com/maps/documentation/javascript/get-api-key
          */
         apiKey: String,
-//        apiLoaded: {
-//          type: Boolean,
-//          value: false,
-//          readOnly: true,
-//          notify: true
-//        }
+
+        /**
+         * True when the Google maps API has been loaded. You can also listen for the `api-loaded` event.
+         * Attempts to use the geocoder before it is ready will be queued and executed when ready.
+         */
+        isLoaded: {
+          type: Boolean,
+          value: false,
+          readOnly: true
+        }
       },
 
-//      ready: function() {
-//        this.$.api.addEventListener('api-load', function(e) {
-////          this._setApiLoaded(true);
-//          this.fire('api-loaded');
-//        });
-//      },
+      /**
+       * The `google.maps.Geocoder` instance.
+       */
+      get geocoder() {
+        this.geocoderInstance = this.geocoderInstance || new google.maps.Geocoder();
+        return this.geocoderInstance;
+      },
+
+      ready: function() {
+        this.$.api.addEventListener('api-load', function(e) {
+          this._setIsLoaded(true);
+          if (this.queue) {
+            for (var i = 0; i < this.queue.length; i++) {
+              this.queue[i]();
+            }
+          }
+        }.bind(this));
+      },
 
       /**
        * Convert an address into coordinates.
@@ -55,7 +70,10 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
        *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
        */
       geocode: function(address, onComplete) {
-        this.geocoder = this.geocoder || new google.maps.Geocoder();
+        if (!this.isLoaded) {
+          this.__addToQueue(this.geocode, this, arguments);
+          return;
+        }
         this.geocoder.geocode({address: address}, function(results, status) {
 //                    console.log(address, status, results);
           if (status == google.maps.GeocoderStatus.OK && results[0]) {
@@ -85,7 +103,10 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
        *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
        */
       reverseGeocode: function(lat, lng, precise, onComplete) {
-        this.geocoder = this.geocoder || new google.maps.Geocoder();
+        if (!this.isLoaded) {
+          this.__addToQueue(this.reverseGeocode, this, arguments);
+          return;
+        }
         this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
 //                    console.log(lat, lng, precise, status, results);
           if (status == google.maps.GeocoderStatus.OK && (precise || results[1])) {
@@ -110,7 +131,10 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
        *              If the geocoder fails, a console warning is emitted and all arguments will be undefined.
        */
       reverseGeocodePlace: function(placeId, onComplete) {
-        this.geocoder = this.geocoder || new google.maps.Geocoder();
+        if (!this.isLoaded) {
+          this.__addToQueue(this.reverseGeocodePlace, this, arguments);
+          return;
+        }
         this.geocoder.geocode({'placeId': placeId}, function(results, status) {
 //                    console.log(placeId, status, results);
           if (status == google.maps.GeocoderStatus.OK && results[0]) {
@@ -125,6 +149,15 @@ An element to perform geocoding and reverse geocoding using the Google maps API.
           }
         });
       },
+
+      __addToQueue: function(fun, ctx, args) {
+        console.log('adding to queue');
+        this.queue = this.queue || [];
+        this.queue.push(function() {
+          console.log(fun, ctx, args);
+          fun.apply(ctx, args);
+        });
+      }
     });
   </script>
 </dom-module>

@@ -28,7 +28,6 @@
           <div>Toledo, OH's placeId reverse geocoded:</div>
           <div style="margin: 8px;" id="place"></div>
           <script>
-            document.addEventListener('maps-api-loaded', function() {
               var geo = document.getElementById('geo');
 
               geo.geocode('Toledo, OH', function (address, lat, lng, place) {
@@ -37,7 +36,7 @@
               });
 
               // Toledo, OH coordinates
-              geo.reverseGeocode(41.6639383, -83.55521199999998, true, function (address, components, place) {
+              geo.reverseGeocode(41.6639383, -83.55521199999998, false, function (address, components, place) {
                 document.getElementById('reverse').innerHTML = 'address: ' + address +
                         '<br>components ' + components + '<br>place_id: ' + place;
                 console.log('reverseGeocode() address components', components);
@@ -49,7 +48,6 @@
                         '<br>components ' + components + '<br>lat: ' + lat + '<br>lng: ' + lng;
                 console.log('placeId address components', components);
               });
-            });
           </script>
         </template>
       </demo-snippet>
