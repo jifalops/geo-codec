@@ -1,14 +1,13 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/jifalops/geo-codec)
 
 # geo-codec
-
 Easily do geocoding and reverse geocoding with the Google maps API.
-
 
 ## Installation
 ```
 bower install --save geo-codec
 ```
+
 ## Usage
 You will need your own Google Maps API key to use this element. See the demo.
 
@@ -43,8 +42,6 @@ You will need your own Google Maps API key to use this element. See the demo.
 <input id="search" /><button onclick="runDemo()">Search</button>
 <div id="results"></div>
 ```
-
-
 
 ## Contributing
 
