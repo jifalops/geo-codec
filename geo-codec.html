@@ -5,7 +5,7 @@
 `geo-codec`
 An element to easily do geocoding and reverse geocoding using the Google maps API.
 
-@demo demo/index.html 
+@demo demo/index.html
 -->
 
 <dom-module id="geo-codec">
@@ -15,9 +15,11 @@ An element to easily do geocoding and reverse geocoding using the Google maps AP
         display: none;
       }
     </style>
-    <google-maps-api id="api"
-                     api-key="[[apiKey]]"
-                     version="3.exp"></google-maps-api>
+    <google-maps-api
+      id="api"
+      api-key="[[apiKey]]"
+      version="3.exp">
+    </google-maps-api>
   </template>
 
   <script>
