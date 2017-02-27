@@ -40,7 +40,7 @@ bower install --save geo-codec
 ```html
 <geo-codec id="codec" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
 <input id="search" />
-<button onclick="runDemo">Search</button>
+<button onclick="runDemo()">Search</button>
 <div id="results"></div>
 ```
 
