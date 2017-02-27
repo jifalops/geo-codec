@@ -19,7 +19,7 @@
     "location"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.4.0",
+    "polymer": "^1.8.1",
     "google-apis": "^1.1.7"
   },
   "devDependencies": {

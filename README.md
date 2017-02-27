@@ -16,7 +16,8 @@ bower install --save geo-codec
 ```
 <custom-element-demo>
   <template>
-    <link rel="import" href="geo-codec.html">    
+    <link rel="import" href="geo-codec.html">
+    <next-code-block></next-code-block>   
   </template>
   <script>
     var codec = document.getElementById('codec');
