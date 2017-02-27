@@ -16,22 +16,23 @@ bower install --save geo-codec
 ```
 <custom-element-demo>
   <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="geo-codec.html">
     <next-code-block></next-code-block>   
+    <script>
+      var codec = document.getElementById('codec');
+      var search = document.getElementById('search');
+      var results = document.getElementById('results');
+      function runDemo() {      
+        codec.geocode(search.value, function (address, lat, lng, place) {
+          results.innerHTML = 'address: ' + address
+            + '<br>lat: ' + lat
+            + '<br>lng: ' + lng
+            + '<br>place id: ' + place;
+        });
+      }    
+    </script>
   </template>
-  <script>
-    var codec = document.getElementById('codec');
-    var search = document.getElementById('search');
-    var results = document.getElementById('results');
-    function runDemo() {      
-      codec.geocode(search.value, function (address, lat, lng, place) {
-        results.innerHTML = 'address: ' + address
-          + '<br>lat: ' + lat
-          + '<br>lng: ' + lng
-          + '<br>place id: ' + place;
-      });
-    }    
-  </script>
 </custom-element-demo>
 ```
 -->
