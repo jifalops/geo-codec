@@ -2,9 +2,7 @@
 
 # geo-codec
 
-Easily do geocoding and reverse geocoding using the Google maps API.
-
-[Documentation / Demo](https://jifalops.github.io/geo-codec)
+Easily do geocoding and reverse geocoding with the Google maps API.
 
 
 ## Installation
@@ -18,11 +16,7 @@ bower install --save geo-codec
 ```
 <custom-element-demo>
   <template>
-    <link rel="import" href="geo-codec.html">
-    <geo-codec id="codec" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
-    <input id="search" />
-    <button value="Search" onclick="runDemo"></button>
-    <div id="results"></div>
+    <link rel="import" href="geo-codec.html">    
   </template>
   <script>
     var codec = document.getElementById('codec');
@@ -36,16 +30,15 @@ bower install --save geo-codec
           + '<br>place id: ' + place;
       });
     }    
-
-
   </script>
 </custom-element-demo>
 ```
 -->
+
 ```html
-<geo-codec id="codec" api-key="[your maps api key]"></geo-codec>
+<geo-codec id="codec" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
 <input id="search" />
-<button value="Search" onclick="runDemo()"></button>
+<button onclick="runDemo">Search</button>
 <div id="results"></div>
 ```
 
