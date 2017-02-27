@@ -9,16 +9,8 @@ Easily do geocoding and reverse geocoding with the Google maps API.
 ```
 bower install --save geo-codec
 ```
-
 ## Usage
-```html
-<geo-codec id="codec" api-key="[your Maps API key]"></geo-codec>
-```
-```javascript
-codec.geocode('some search criteria', function(address, lat, lng, placeId) {
-  // handle results
-});
-```
+You will need your own Google Maps API key to use this element. See the demo.
 
 ## Demo
 <!--
@@ -37,7 +29,7 @@ codec.geocode('some search criteria', function(address, lat, lng, placeId) {
           results.innerHTML = 'address: ' + address
             + '<br>lat: ' + lat
             + '<br>lng: ' + lng
-            + '<br>place id: ' + place;
+            + '<br>placeId: ' + place;
         });
       }    
     </script>
