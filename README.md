@@ -45,10 +45,10 @@ You will need your own Google Maps API key to use this element. See the demo.
 
 Full demo:
 [webcomponents.org](https://www.webcomponents.org/element/jifalops/geo-codec/demo/demo/index.html)
-| [github](https://jifalops.github.io/geo-query-input/components/geo-query-input/demo/).
+| [github](https://jifalops.github.io/geo-codec/components/geo-codec/demo/).
 
 API: [webcomponents.org](https://www.webcomponents.org/element/jifalops/geo-codec/geo-codec)
-| [github](https://jifalops.github.io/geo-query-input).
+| [github](https://jifalops.github.io/geo-codec).
 
 ## Contributing
 
