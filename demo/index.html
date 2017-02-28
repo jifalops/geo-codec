@@ -17,37 +17,75 @@
   <body>
 
     <div class="vertical-section-container centered">
-      <h3>Basic geo-codec Demo</h3>
+      <h3>Geocode an address to coordinates.</h3>
       <demo-snippet>
         <template>
-          <geo-codec id="geo" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
-          <div>Toledo, OH geocoded:</div>
-          <div style="margin: 8px;" id="geocode"></div>
-          <div>[41.6639383, -83.55521199999998] reverse geocoded:</div>
-          <div style="margin: 8px;" id="reverse"></div>
-          <div>Toledo, OH's placeId reverse geocoded:</div>
-          <div style="margin: 8px;" id="place"></div>
+          <geo-codec id="codec1" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
+          <input id="search1" value="usa" /><button onclick="runDemo1()">Search</button>
+          <div id="results1"></div>
           <script>
-              var geo = document.getElementById('geo');
-
-              geo.geocode('Toledo, OH', function (address, lat, lng, place) {
-                document.getElementById('geocode').innerHTML = 'address: ' + address +
-                        '<br>lat: ' + lat + '<br>lng: ' + lng + '<br>place_id: ' + place;
+            var codec1 = document.getElementById('codec1');
+            var search1 = document.getElementById('search1');
+            var results1 = document.getElementById('results1');
+            function runDemo1() {
+              codec1.geocode(search1.value, function (address, lat, lng, placeId) {
+                results1.innerHTML = 'address: ' + address
+                  + '<br>lat: ' + lat
+                  + '<br>lng: ' + lng
+                  + '<br>placeId: ' + placeId;
               });
+            }
+          </script>
+        </template>
+      </demo-snippet>
 
-              // Toledo, OH coordinates
-              geo.reverseGeocode(41.6639383, -83.55521199999998, false, function (address, components, place) {
-                document.getElementById('reverse').innerHTML = 'address: ' + address +
-                        '<br>components ' + components + '<br>place_id: ' + place;
-                console.log('reverseGeocode() address components', components);
+      <h3>Reverse geocode coordinates to an address.</h3>
+      <demo-snippet>
+        <template>
+          <geo-codec id="codec2" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
+          <input id="lat2" value="37.09024" /><br />
+          <input id="lng2" value="-95.712891" /><br />
+          <label><input id="precise2" type="checkbox" />precise address</label><br />
+          <button onclick="runDemo2()">Reverse Geocode</button>
+          <div id="results2"></div>
+          <script>
+            var codec2 = document.getElementById('codec2');
+            var lat2 = document.getElementById('lat2');
+            var lng2 = document.getElementById('lng2');
+            var precise = document.getElementById('precise2');
+            var results2 = document.getElementById('results2');
+            function runDemo2() {
+              codec2.reverseGeocode(Number(lat2.value), Number(lng2.value), precise.checked,
+                function (address, components, placeId) {
+                results2.innerHTML = 'address: ' + address
+                  + '<br>components: ' + JSON.stringify(components)
+                  + '<br>placeId: ' + placeId;
               });
+            }
+          </script>
+        </template>
+      </demo-snippet>
 
-              // Toledo, OH place id
-              geo.reverseGeocodePlace('ChIJeU4e_C2HO4gRRcM6RZ_IPHw', function (address, components, lat, lng) {
-                document.getElementById('place').innerHTML = 'address: ' + address +
-                        '<br>components ' + components + '<br>lat: ' + lat + '<br>lng: ' + lng;
-                console.log('placeId address components', components);
+      <h3>Reverse geocode a placeId.</h3>
+      <demo-snippet>
+        <template>
+          <geo-codec id="codec3" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
+          <input id="placeId3" value="ChIJCzYy5IS16lQRQrfeQ5K5Oxw" /><br />
+          <button onclick="runDemo3()">Reverse PlaceId</button>
+          <div id="results3"></div>
+          <script>
+            var codec3 = document.getElementById('codec3');
+            var placeId3 = document.getElementById('placeId3');
+            var results3 = document.getElementById('results3');
+            function runDemo3() {
+              codec3.reverseGeocodePlaceId(placeId3.value,
+                function (address, components, lat, lng) {
+                results3.innerHTML = 'address: ' + address
+                  + '<br>components: ' + JSON.stringify(components)
+                  + '<br>lat: ' + lat
+                  + '<br>lng: ' + lng;
               });
+            }
           </script>
         </template>
       </demo-snippet>

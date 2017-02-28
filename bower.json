@@ -1,6 +1,6 @@
 {
   "name": "geo-codec",
-  "description": "Easily do geocoding and reverse geocoding with the Google maps API.",
+  "description": "Easily geocode and reverse geocode strings and coordinates.",
   "main": "geo-codec.html",
   "keywords": [
     "web-components",

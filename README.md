@@ -1,7 +1,7 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/jifalops/geo-codec)
 
 # geo-codec
-Easily do geocoding and reverse geocoding with the Google maps API.
+Easily geocode and reverse geocode strings and coordinates.
 
 ## Installation
 ```
