@@ -42,6 +42,8 @@ You will need your own Google Maps API key to use this element. See the demo.
 <input id="search" /><button onclick="runDemo()">Search</button>
 <div id="results"></div>
 ```
+See also the github pages [doc](https://jifalops.github.io/geo-query-input)
+and [demo](https://jifalops.github.io/geo-query-input/components/geo-query-input/demo/).
 
 ## Contributing
 
