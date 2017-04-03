@@ -18,19 +18,23 @@ You will need your own Google Maps API key to use this element. See the demo.
   <template>
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="geo-codec.html">
-    <next-code-block></next-code-block>   
+    <next-code-block></next-code-block>
     <script>
       var codec = document.getElementById('codec');
       var search = document.getElementById('search');
+      var return1 = document.getElementById('return');
       var results = document.getElementById('results');
-      function runDemo() {      
-        codec.geocode(search.value, function (address, lat, lng, place) {
+      function runDemo() {
+        var ret = codec.geocode(search.value, function (address, lat, lng, place) {
           results.innerHTML = 'address: ' + address
             + '<br>lat: ' + lat
             + '<br>lng: ' + lng
             + '<br>placeId: ' + place;
         });
-      }    
+        if (ret) return1.innerText = 'Sent to geocoder.';
+        else if (ret === null) return1.innerText = 'Geocoder will use when ready.';
+        else if (ret === false) return1.innerText = 'Result was cached.';
+      }
     </script>
   </template>
 </custom-element-demo>
@@ -40,6 +44,7 @@ You will need your own Google Maps API key to use this element. See the demo.
 ```html
 <geo-codec id="codec" api-key="AIzaSyAUPOaJubJnaRTPUd_xX8MOA62gRtSlfCc"></geo-codec>
 <input id="search" /><button onclick="runDemo()">Search</button>
+<div id="return"></div>
 <div id="results"></div>
 ```
 

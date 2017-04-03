@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../google-apis/google-maps-api.html">
+<link rel="import" href="../app-storage/app-localstorage/app-localstorage-document.html">
 
 <!--
 `geo-codec`
@@ -19,6 +20,11 @@ Easily geocode and reverse geocode strings and coordinates.
       library-loaded="{{apiLoaded}}"
       on-api-load="__onApiLoad">
     </google-maps-api>
+    <template is="dom-if" if="[[!disableCachePersist]]" restamp>
+      <app-localstorage-document key="geoCodecGeocodeCache" data="{{_geoCache}}"></app-localstorage-document>
+      <app-localstorage-document key="geoCodecReverseCache" data="{{_revCache}}"></app-localstorage-document>
+      <app-localstorage-document key="geoCodecPlaceCache" data="{{_placeCache}}"></app-localstorage-document>
+    </template>
   </template>
 
   <script>
@@ -49,8 +55,51 @@ Easily geocode and reverse geocode strings and coordinates.
          */
         disableQueue: {
           type: Boolean,
-          value: false,
-          reflectToAttribute: true
+          value: false
+        },
+        /**
+         * Disable persisting the caches to local storage.
+         */
+        disableCachePersist: {
+          type: Boolean,
+          value: false
+        },
+        _geoCache: {
+          type: Object,
+          value: {
+            'usa': [
+              'United States',
+              37.09024,
+              -95.71289100000001,
+              'ChIJCzYy5IS16lQRQrfeQ5K5Oxw'
+            ]
+          }
+        },
+         _revCache: {
+          type: Object,
+          value: {
+            // '37.09024,-95.71289100000001,false': [
+            //   'Flying K Ranch Airport, Independence, KS 67301, USA',
+            //   [{"long_name":"Flying K Ranch Airport","short_name":"Flying K Ranch Airport","types":["airport","establishment","point_of_interest"]},{"long_name":"Independence","short_name":"Independence","types":["locality","political"]},{"long_name":"Fawn Creek","short_name":"Fawn Creek","types":["administrative_area_level_3","political"]},{"long_name":"Montgomery County","short_name":"Montgomery County","types":["administrative_area_level_2","political"]},{"long_name":"Kansas","short_name":"KS","types":["administrative_area_level_1","political"]},{"long_name":"United States","short_name":"US","types":["country","political"]},{"long_name":"67301","short_name":"67301","types":["postal_code"]}],
+            //   'ChIJpS60CuyBt4cR51TECtgseMU'
+            // ],
+            // '37.09024,-95.712891,true': [
+            //   '5000 Estate Enighed, Independence, KS 67301, USA',
+            //   [{"long_name":"5000","short_name":"5000","types":["street_number"]},{"long_name":"Estate Enighed","short_name":"Estate Enighed","types":["route"]},{"long_name":"Independence","short_name":"Independence","types":["locality","political"]},{"long_name":"Fawn Creek","short_name":"Fawn Creek","types":["administrative_area_level_3","political"]},{"long_name":"Montgomery County","short_name":"Montgomery County","types":["administrative_area_level_2","political"]},{"long_name":"Kansas","short_name":"KS","types":["administrative_area_level_1","political"]},{"long_name":"United States","short_name":"US","types":["country","political"]},{"long_name":"67301","short_name":"67301","types":["postal_code"]}],
+            //   'ChIJQ10sdeyBt4cRZHuO2F6deVg'
+            // ],
+          }
+        },
+        _placeCache: {
+          type: Object,
+          value: {
+            // 'ChIJCzYy5IS16lQRQrfeQ5K5Oxw': [
+            //   'United States',
+            //   [{"long_name":"United States","short_name":"US","types":["country","political"]}],
+            //   37.09024,
+            //   -95.71289100000001,
+            // ]
+          }
         }
       },
 
@@ -71,28 +120,38 @@ Easily geocode and reverse geocode strings and coordinates.
        * @param {function} onComplete A callback function with arguments
        * (`full-address`, `lat`, `lng`, `placeId`). If the geocoder fails, a
        * console warning is emitted and all arguments will be undefined.
-       * @return {boolean} true if the geocoder is was invoked or
-       * false the the request was queued.
+       * @return {boolean} true if the geocoder is was invoked,
+       * false if the results was cached, or null if the the request was queued.
        */
       geocode: function(address, onComplete) {
         if (!this.apiLoaded) {
           this.__addToQueue(this.geocode, this, arguments);
-          return false;
+          return null;
         }
-        this.geocoder.geocode({address: address}, function(results, status) {
-//                    console.log(address, status, results);
-          if (status == google.maps.GeocoderStatus.OK && results[0]) {
-            onComplete(
-                    results[0].formatted_address,           // address
-                    results[0].geometry.location.lat(),     // lat
-                    results[0].geometry.location.lng(),     // lng
-                    results[0].place_id);                   // place id
-          } else {
-            console.warn('Geocode failed for ' + address + '. Status ' + status, results);
-            onComplete();
-          }
-        });
-        return true;
+        var cached = this._geoCache[address];
+        if (cached) {
+          onComplete && onComplete(cached[0], cached[1], cached[2], cached[3]);
+          return false;
+        } else {
+          this.geocoder.geocode({address: address}, function(results, status) {
+  //                    console.log(address, status, results);
+            if (status == google.maps.GeocoderStatus.OK && results[0]) {
+              var result = [
+                results[0].formatted_address,           // address
+                results[0].geometry.location.lat(),     // lat
+                results[0].geometry.location.lng(),     // lng
+                results[0].place_id                     // place id
+              ];
+              this._geoCache[address] = result;
+              this.__persistCache('_geoCache');
+              onComplete && onComplete(result[0], result[1], result[2], result[3]);
+            } else {
+              console.warn('Geocode failed for ' + address + '. Status ' + status, results);
+              onComplete && onComplete();
+            }
+          }.bind(this));
+          return true;
+        }
       },
 
       /**
@@ -105,28 +164,38 @@ Easily geocode and reverse geocode strings and coordinates.
        * @param {function} onComplete A callback function with arguments
        * (`address`, `address-components`, `placeId`). If the geocoder
        * fails, a console warning is emitted and all arguments will be undefined.
-       * @return {boolean} true if the geocoder is was invoked or
-       * false the the request was queued.
+       * @return {boolean} true if the geocoder is was invoked,
+       * false if the results was cached, or null if the the request was queued.
        */
       reverseGeocode: function(lat, lng, precise, onComplete) {
         if (!this.apiLoaded) {
           this.__addToQueue(this.reverseGeocode, this, arguments);
-          return false;
+          return null;
         }
-        this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
-//                    console.log(lat, lng, precise, status, results);
-          if (status == google.maps.GeocoderStatus.OK && (precise || results[1])) {
-            var index = precise ? 0 : 1;
-            onComplete(
-                    results[index].formatted_address,           // address
-                    results[index].address_components,          // components
-                    results[index].place_id);                   // place
-          } else {
-            console.warn('Geocode failed for [' + lat + ',' + lng + ']. Status ' + status, results);
-            onComplete();
-          }
-        });
-        return true;
+        var cached = this._revCache[lat+','+lng+','+precise];
+        if (cached) {
+          onComplete && onComplete(cached[0], cached[1], cached[2]);
+          return false;
+        } else {
+          this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
+  //                    console.log(lat, lng, precise, status, results);
+            if (status == google.maps.GeocoderStatus.OK && (precise || results[1])) {
+              var index = precise ? 0 : 1;
+              var result = [
+                results[index].formatted_address,           // address
+                results[index].address_components,          // components
+                results[index].place_id                     // place
+              ];
+              this._revCache[lat+','+lng+','+precise] = result;
+              this.__persistCache('_revCache');
+              onComplete && onComplete(result[0], result[1], result[2]);
+            } else {
+              console.warn('Geocode failed for [' + lat + ',' + lng + ']. Status ' + status, results);
+              onComplete && onComplete();
+            }
+          }.bind(this));
+          return true;
+        }
       },
 
       /**
@@ -136,28 +205,38 @@ Easily geocode and reverse geocode strings and coordinates.
        * @param {function} onComplete A callback function with arguments
        * (`address`, `address-components`, `lat`, `lng`). If the geocoder
        * fails, a console warning is emitted and all arguments will be undefined.
-       * @return {boolean} true if the geocoder is was invoked or
-       * false the the request was queued.
+       * @return {boolean} true if the geocoder is was invoked,
+       * false if the results was cached, or null if the the request was queued.
        */
       reverseGeocodePlaceId: function(placeId, onComplete) {
         if (!this.apiLoaded) {
           this.__addToQueue(this.reverseGeocodePlaceId, this, arguments);
-          return false;
+          return null;
         }
-        this.geocoder.geocode({'placeId': placeId}, function(results, status) {
-//                    console.log(placeId, status, results);
-          if (status == google.maps.GeocoderStatus.OK && results[0]) {
-            onComplete(
-                    results[0].formatted_address,           // address
-                    results[0].address_components,          // components
-                    results[0].geometry.location.lat(),     // lat
-                    results[0].geometry.location.lng());    // lng
-          } else {
-            console.warn('Geocode failed for ' + placeId + '. Status ' + status, results);
-            onComplete();
-          }
-        });
-        return true;
+        var cached = this._placeCache[placeId];
+        if (cached) {
+          onComplete && onComplete(cached[0], cached[1], cached[2], cached[3]);
+          return false;
+        } else {
+          this.geocoder.geocode({'placeId': placeId}, function(results, status) {
+  //                    console.log(placeId, status, results);
+            if (status == google.maps.GeocoderStatus.OK && results[0]) {
+              var result = [
+                results[0].formatted_address,           // address
+                results[0].address_components,          // components
+                results[0].geometry.location.lat(),     // lat
+                results[0].geometry.location.lng()      // lng
+              ];
+              this._placeCache[placeId] = result;
+              this.__persistCache('_placeCache');
+              onComplete && onComplete(result[0], result[1], result[2], result[3]);
+            } else {
+              console.warn('Geocode failed for ' + placeId + '. Status ' + status, results);
+              onComplete && onComplete();
+            }
+          }.bind(this));
+          return true;
+        }
       },
 
       /**
@@ -184,6 +263,14 @@ Easily geocode and reverse geocode strings and coordinates.
             console.log(fun, ctx, args);
             fun.apply(ctx, args);
           });
+        }
+      },
+
+      __persistCache: function(name) {
+        if (!this.disableCachePersist) {
+          var tmp = this[name];
+          this[name] = [];
+          this[name] = tmp;
         }
       }
 
