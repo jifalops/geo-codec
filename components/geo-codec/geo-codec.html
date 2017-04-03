@@ -1,0 +1,196 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../google-apis/google-maps-api.html">
+
+<!--
+`geo-codec`
+Easily geocode and reverse geocode strings and coordinates.
+@demo demo/index.html
+-->
+
+<dom-module id="geo-codec">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    <google-maps-api
+      api-key="[[apiKey]]"
+      library-loaded="{{apiLoaded}}"
+      on-api-load="__onApiLoad">
+    </google-maps-api>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'geo-codec',
+
+      properties: {
+        /**
+         * Your Google maps API key. See https://developers.google.com/maps/documentation/javascript/get-api-key
+         */
+        apiKey: String,
+
+        /**
+         * True when the Google maps API has been loaded. You can also listen
+         * for the `api-load` event. Attempts to use the geocoder before it is
+         * ready will be queued and executed when ready.
+         */
+        apiLoaded: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          readOnly: true
+        },
+
+        /**
+         * Disable the internal queue of geocoder uses before it is ready.
+         */
+        disableQueue: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        }
+      },
+
+      /**
+       * The `google.maps.Geocoder` instance.
+       */
+      get geocoder() {
+        if (this.apiLoaded) {
+          this._geocoder = this._geocoder || new google.maps.Geocoder();
+          return this._geocoder;
+        }
+      },
+
+      /**
+       * Convert an address into coordinates.
+       *
+       * @param {string} address The string to geocode.
+       * @param {function} onComplete A callback function with arguments
+       * (`full-address`, `lat`, `lng`, `placeId`). If the geocoder fails, a
+       * console warning is emitted and all arguments will be undefined.
+       * @return {boolean} true if the geocoder is was invoked or
+       * false the the request was queued.
+       */
+      geocode: function(address, onComplete) {
+        if (!this.apiLoaded) {
+          this.__addToQueue(this.geocode, this, arguments);
+          return false;
+        }
+        this.geocoder.geocode({address: address}, function(results, status) {
+//                    console.log(address, status, results);
+          if (status == google.maps.GeocoderStatus.OK && results[0]) {
+            onComplete(
+                    results[0].formatted_address,           // address
+                    results[0].geometry.location.lat(),     // lat
+                    results[0].geometry.location.lng(),     // lng
+                    results[0].place_id);                   // place id
+          } else {
+            console.warn('Geocode failed for ' + address + '. Status ' + status, results);
+            onComplete();
+          }
+        });
+        return true;
+      },
+
+      /**
+       * Convert coordinates into an address.
+       *
+       * @param {number} lat Latitude
+       * @param {number} lng Longitude
+       * @param {boolean} precise If true, attempts to get the street address
+       * as part of the location. If false, will only get the general area (e.g. city).
+       * @param {function} onComplete A callback function with arguments
+       * (`address`, `address-components`, `placeId`). If the geocoder
+       * fails, a console warning is emitted and all arguments will be undefined.
+       * @return {boolean} true if the geocoder is was invoked or
+       * false the the request was queued.
+       */
+      reverseGeocode: function(lat, lng, precise, onComplete) {
+        if (!this.apiLoaded) {
+          this.__addToQueue(this.reverseGeocode, this, arguments);
+          return false;
+        }
+        this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
+//                    console.log(lat, lng, precise, status, results);
+          if (status == google.maps.GeocoderStatus.OK && (precise || results[1])) {
+            var index = precise ? 0 : 1;
+            onComplete(
+                    results[index].formatted_address,           // address
+                    results[index].address_components,          // components
+                    results[index].place_id);                   // place
+          } else {
+            console.warn('Geocode failed for [' + lat + ',' + lng + ']. Status ' + status, results);
+            onComplete();
+          }
+        });
+        return true;
+      },
+
+      /**
+       * Convert a place_id into an address and coordinates.
+       *
+       * @param {string} placeId The placeId to reverse geocode.
+       * @param {function} onComplete A callback function with arguments
+       * (`address`, `address-components`, `lat`, `lng`). If the geocoder
+       * fails, a console warning is emitted and all arguments will be undefined.
+       * @return {boolean} true if the geocoder is was invoked or
+       * false the the request was queued.
+       */
+      reverseGeocodePlaceId: function(placeId, onComplete) {
+        if (!this.apiLoaded) {
+          this.__addToQueue(this.reverseGeocodePlaceId, this, arguments);
+          return false;
+        }
+        this.geocoder.geocode({'placeId': placeId}, function(results, status) {
+//                    console.log(placeId, status, results);
+          if (status == google.maps.GeocoderStatus.OK && results[0]) {
+            onComplete(
+                    results[0].formatted_address,           // address
+                    results[0].address_components,          // components
+                    results[0].geometry.location.lat(),     // lat
+                    results[0].geometry.location.lng());    // lng
+          } else {
+            console.warn('Geocode failed for ' + placeId + '. Status ' + status, results);
+            onComplete();
+          }
+        });
+        return true;
+      },
+
+      /**
+       * Clear all pending uses of the internal geocoder.
+       */
+      emptyQueue: function() {
+        this.queue = [];
+      },
+
+      __onApiLoad: function() {
+        if (this.queue) {
+          for (var i = 0; i < this.queue.length; i++) {
+            this.queue[i]();
+          }
+        }
+        this._setApiLoaded(true);
+        this.fire('api-load')
+      },
+
+      __addToQueue: function(fun, ctx, args) {
+        if (!this.disableQueue) {
+          this.queue = this.queue || [];
+          this.queue.push(function() {
+            console.log(fun, ctx, args);
+            fun.apply(ctx, args);
+          });
+        }
+      }
+
+      /**
+       * Fired when the Maps API library is loaded and ready.
+       * @event api-load
+       */
+    });
+  </script>
+</dom-module>

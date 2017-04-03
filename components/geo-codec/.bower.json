@@ -1,0 +1,43 @@
+{
+  "name": "geo-codec",
+  "description": "Easily geocode and reverse geocode strings and coordinates.",
+  "main": "geo-codec.html",
+  "keywords": [
+    "web-components",
+    "geocode",
+    "geocoder",
+    "google",
+    "coordinates",
+    "latitude",
+    "longitude",
+    "lat",
+    "lng",
+    "maps",
+    "geocoding",
+    "codec",
+    "geo",
+    "location"
+  ],
+  "dependencies": {
+    "polymer": "^1.8.1",
+    "google-apis": "^1.1.7"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/jifalops/geo-codec",
+  "_release": "87bfaf94a0",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "87bfaf94a063a32bb4f29af662ce59707bb47a49"
+  },
+  "_source": "https://github.com/jifalops/geo-codec.git",
+  "_target": "master",
+  "_originalSource": "jifalops/geo-codec",
+  "_direct": true
+}
