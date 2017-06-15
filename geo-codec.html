@@ -124,14 +124,13 @@ Easily geocode and reverse geocode strings and coordinates.
        * false if the results was cached, or null if the the request was queued.
        */
       geocode: function(address, onComplete) {
-        if (!this.apiLoaded) {
-          this.__addToQueue(this.geocode, this, arguments);
-          return null;
-        }
         var cached = this._geoCache[address];
         if (cached) {
           onComplete && onComplete(cached[0], cached[1], cached[2], cached[3]);
           return false;
+        } else if (!this.apiLoaded) {
+          this.__addToQueue(this.geocode, this, arguments);
+          return null;
         } else {
           this.geocoder.geocode({address: address}, function(results, status) {
   //                    console.log(address, status, results);
@@ -168,14 +167,13 @@ Easily geocode and reverse geocode strings and coordinates.
        * false if the results was cached, or null if the the request was queued.
        */
       reverseGeocode: function(lat, lng, precise, onComplete) {
-        if (!this.apiLoaded) {
-          this.__addToQueue(this.reverseGeocode, this, arguments);
-          return null;
-        }
         var cached = this._revCache[lat+','+lng+','+precise];
         if (cached) {
           onComplete && onComplete(cached[0], cached[1], cached[2]);
           return false;
+        } else if (!this.apiLoaded) {
+          this.__addToQueue(this.reverseGeocode, this, arguments);
+          return null;
         } else {
           this.geocoder.geocode({location: {lat: lat, lng: lng}}, function(results, status) {
   //                    console.log(lat, lng, precise, status, results);
@@ -209,14 +207,13 @@ Easily geocode and reverse geocode strings and coordinates.
        * false if the results was cached, or null if the the request was queued.
        */
       reverseGeocodePlaceId: function(placeId, onComplete) {
-        if (!this.apiLoaded) {
-          this.__addToQueue(this.reverseGeocodePlaceId, this, arguments);
-          return null;
-        }
         var cached = this._placeCache[placeId];
         if (cached) {
           onComplete && onComplete(cached[0], cached[1], cached[2], cached[3]);
           return false;
+        } else if (!this.apiLoaded) {
+          this.__addToQueue(this.reverseGeocodePlaceId, this, arguments);
+          return null;
         } else {
           this.geocoder.geocode({'placeId': placeId}, function(results, status) {
   //                    console.log(placeId, status, results);
@@ -247,7 +244,7 @@ Easily geocode and reverse geocode strings and coordinates.
       },
 
       __onApiLoad: function() {
-        console.debug('Maps API loaded.');
+        // console.debug('Maps API loaded.');
         this._setApiLoaded(true);
         if (this.queue) {
           for (var i = 0; i < this.queue.length; i++) {
@@ -261,7 +258,7 @@ Easily geocode and reverse geocode strings and coordinates.
         if (!this.disableQueue) {
           this.queue = this.queue || [];
           this.queue.push(function() {
-            console.log(fun, ctx, args);
+            // console.log(fun, ctx, args);
             fun.apply(ctx, args);
           });
         }
