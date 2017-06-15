@@ -247,12 +247,13 @@ Easily geocode and reverse geocode strings and coordinates.
       },
 
       __onApiLoad: function() {
+        console.debug('Maps API loaded.');
+        this._setApiLoaded(true);
         if (this.queue) {
           for (var i = 0; i < this.queue.length; i++) {
             this.queue[i]();
           }
         }
-        this._setApiLoaded(true);
         this.fire('api-load')
       },
 
