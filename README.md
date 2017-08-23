@@ -5,7 +5,8 @@ Easily geocode and reverse geocode strings and coordinates.
 
 ## Installation
 ```
-bower install --save geo-codec
+bower i -S geo-codec        # Polymer 2.0 hybrid (1.x compatible)
+bower i -S geo-codec#^1.1.2 # Polymer 1.x based
 ```
 
 ## Usage
