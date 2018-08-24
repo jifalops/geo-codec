@@ -1,3 +1,5 @@
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/jifalopsgeo-codec)
+[![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/jifalopsgeo-codec.svg)](https://vaadin.com/directory/component/jifalopsgeo-codec)
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/jifalops/geo-codec)
 
 # geo-codec
